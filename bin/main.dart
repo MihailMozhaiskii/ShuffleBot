@@ -1,12 +1,14 @@
 import 'package:ShuffleBot/shuffle_bot.dart';
 import 'package:teledart/teledart.dart';
 import 'package:teledart/telegram.dart';
-
-import 'config.dart';
+import 'dart:io';
 
 main(List<String> arguments) {
   
-  Telegram telegram = Telegram(TELEGRAM_TOKEN);
+  var env = Platform.environment;
+  var TOKEN = env['CHU_WA_CHI_TELEGRAM_TOKEN'];
+  
+  Telegram telegram = Telegram(TOKEN);
   TeleDart teledart = TeleDart(telegram, Event());
 
   teledart.start().then((me) => print('${me.username} is initialised'));
