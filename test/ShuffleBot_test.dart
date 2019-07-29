@@ -3,9 +3,9 @@ import 'package:test/test.dart';
 
 void main() {
   test('Single shuffle strategy work correctly', () {
-    ShuffleStrategy strategy = ShuffleStrategy.SINGLE;
+    int strategy = 1;
 
-    List<Player> players = [Player("one"), Player("two")];
+    List<Player> players = [Player(name: "one"), Player(name: "two")];
 
     ShuffleResult result = Game(strategy, players).shuffle();
 
@@ -24,7 +24,7 @@ void main() {
   });
 
   test('Single shuffle strategy return loses correctly', () {
-    ShuffleStrategy strategy = ShuffleStrategy.SINGLE;
+    int strategy = 1;
 
     List<Player> players = [Player("one"), Player("two"), Player("three")];
 
@@ -45,7 +45,7 @@ void main() {
   });
 
   test('Single shuffle strategy work correctly with large data', () {
-    ShuffleStrategy strategy = ShuffleStrategy.SINGLE;
+    int strategy = 1;
 
     List<Player> players = [Player("one"), Player("two"), Player("three"), Player("four")];
 
@@ -63,7 +63,7 @@ void main() {
   });
 
   test('Pair shuffle strategy work correctly', () {
-    ShuffleStrategy strategy = ShuffleStrategy.PAIR;
+    int strategy = 2;
 
     List<Player> players = [Player("one"), Player("two")];
 
@@ -77,9 +77,9 @@ void main() {
   });
 
   test('Pair shuffle strategy return loses correctly', () {
-    ShuffleStrategy strategy = ShuffleStrategy.PAIR;
+    int strategy = 2;
 
-    List<Player> players = [Player("one"), Player("two"), Player("three"), Player("four"), Player("five")];
+    List<Player> players = [Player("one"), Player(name: "two"), Player(name: "three"), Player(name: "four"), Player(name: "five")];
 
     ShuffleResult result = Game(strategy, players).shuffle();
 
@@ -93,7 +93,7 @@ void main() {
   });
 
   test('Single shuffle strategy work correctly with large data', () {
-    ShuffleStrategy strategy = ShuffleStrategy.PAIR;
+    int strategy = 2;
 
     List<Player> players = [Player("one"), Player("two"), Player("three"), Player("four"), Player("five"), Player("six")];
 

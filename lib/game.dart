@@ -1,13 +1,15 @@
 import 'dart:collection';
 
-enum ShuffleStrategy { SINGLE, PAIR }
-
 class Player {
   String name;
 
-  Player(String name) {
-    this.name = name;
-  }
+  Player({ 
+    this.name 
+  });
+
+  Map toJson() => {
+    'name': name
+  };
 }
 
 class Team {
@@ -36,39 +38,53 @@ class ShuffleResult {
   }
 }
 
+class GameProperties {
+  int strategy;
+  List<Player> players;
+
+  GameProperties({
+    this.strategy,
+    this.players
+  });
+
+  factory GameProperties.fromJson(Map<String, dynamic> json) {
+    return GameProperties(
+      strategy: json['strategy'],
+      players: (json['players'] as List).map((item) => item['name']).map((name) => Player(name: name)).toList()
+    );
+  }
+
+  Map toJson() => {
+    'strategy': strategy,
+    'players': players
+  };
+}
+
 class Game {
 
-  ShuffleStrategy _strategy;
-  List<Player> _players;
+  int strategy;
+  List<Player> players;
 
-  Game(ShuffleStrategy strategy, List<Player> players) {
-    this._strategy = strategy;
-    this._players = players;
+  Game(int strategy, List<Player> players) {
+    this.strategy = strategy;
+    this.players = players;
   }
 
   ShuffleResult shuffle() {
-    int team_members_count;
-    switch (_strategy) {
-      case ShuffleStrategy.PAIR:
-        team_members_count = 2;
-        break;
-      case ShuffleStrategy.SINGLE:
-        team_members_count = 1;
-        break;
-    }
+    int team_members_count = strategy;
 
     int opponents_count = 2;
 
-    _players.shuffle();
-    Queue<Player> players = Queue.from(_players);
+    players.shuffle();
+    Queue<Player> players_queue = Queue.from(players);
 
     List<Opponents> all_opponents = [];
-    while(players.length >= team_members_count * opponents_count) {
+    while(players_queue.length >= team_members_count * opponents_count) {
       List<Team> teams = [];
       for(var i = 0; i < opponents_count; i++) {
         List<Player> team_players = [];
         for(var j = 0; j < team_members_count; j++) {
-          Player player = players.removeLast();
+          Player player = players_queue.removeLast();
           team_players.add(player);
         }
 
@@ -80,6 +96,6 @@ class Game {
       all_opponents.add(opponents);
     }
 
-    return ShuffleResult(all_opponents, players.toList());
+    return ShuffleResult(all_opponents, players_queue.toList());
   }
 }
