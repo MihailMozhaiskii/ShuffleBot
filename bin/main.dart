@@ -4,9 +4,22 @@ import 'package:teledart/telegram.dart';
 import 'dart:io';
 
 main(List<String> arguments) {
-  
-  var env = Platform.environment;
-  var TOKEN = env['CHU_WA_CHI_TELEGRAM_TOKEN'];
+
+  final String FLAVOR = arguments[0]; 
+
+  final Map env = Platform.environment;
+  var TOKEN;
+  switch (FLAVOR) {
+    case 'RELEASE': {
+      TOKEN = env['CHU_WA_CHI_TELEGRAM_TOKEN'];
+    }
+    break;
+
+    default: {
+      TOKEN = env['CHU_WA_CHI_TELEGRAM_TOKEN_DEV'];
+    }
+    break;
+  }
   
   Telegram telegram = Telegram(TOKEN);
   TeleDart teledart = TeleDart(telegram, Event());
@@ -28,4 +41,8 @@ main(List<String> arguments) {
   teledart
   .onCommand('remove')
   .listen((message) => ShuffleBot.removeCommand(message.chat.id.toString(), message.text).then((text) => teledart.replyMessage(message, text)));
+
+  teledart
+  .onMessage(keyword: '\\+')
+  .listen((message) => teledart.replyMessage(message, "${message.date} plus detected."));
 }

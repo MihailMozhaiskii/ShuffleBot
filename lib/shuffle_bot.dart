@@ -62,33 +62,6 @@ class ShuffleBot {
     return Game(strategy, players);
   }
 
-  String handleCreateCommand(String text) {
-    var arguments = text.split(" ");
-    
-    var players = arguments.sublist(2).map((name) => Player(name: name)).toList();
-    var strategy;
-    switch (arguments[1]) {
-      case "1x1":
-        strategy = 1;
-        break;
-      case "2x2":
-        strategy = 2;
-        break;
-    }
-
-    Game game = Game(strategy, players);
-    var shuffle_result = game.shuffle();
-
-    var opponents_text = shuffle_result
-      .opponents
-      .map((opponent) => _formatOpponents(opponent))
-      .join("\n");
-
-    var losers_text = "Losers: " + _formatPlayers(shuffle_result.losers);
-
-    return opponents_text + "\n" + losers_text;
-  }
-
   static String _formatOpponents(Opponents opponents) {
     return _formatTeam(opponents.teams[0]) + " VS " + _formatTeam(opponents.teams[1]);
   }
