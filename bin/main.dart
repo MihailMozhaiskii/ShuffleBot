@@ -27,12 +27,14 @@ main(List<String> arguments) {
 
   teledart.start().then((me) => print('${me.username} is initialised'));
 
+  teledart.onCommand('start').listen((message) => handleCommand('START', message, teledart));
   teledart.onCommand('create').listen(((message) => handleCommand('CREATE', message, teledart)));
   teledart.onCommand('shuffle').listen((message) => handleCommand('SHUFFLE', message, teledart));
   teledart.onCommand('add').listen((message) => handleCommand('ADD', message, teledart));
   teledart.onCommand('remove').listen((message) => handleCommand('REMOVE', message, teledart));
   teledart.onCommand('go').listen((message) => handleCommand('GO', message, teledart));
-  teledart.onCommand('start').listen((message) => handleCommand('START', message, teledart));
+  teledart.onCommand('run').listen((message) => handleCommand('RUN', message, teledart));
+  teledart.onCommand('current').listen((message) => handleCommand('CURRENT', message, teledart));
 
   teledart.onMessage(keyword: '\\+').listen((message) => handleMessage('PLUS', message, teledart));
 }
@@ -68,7 +70,9 @@ Future<String> onCommand(String command, Message message) {
     case "ADD": return ShuffleBot.addCommand(chat_id(), text());
     case "REMOVE": return ShuffleBot.removeCommand(chat_id(), text());
     case "GO": return ShuffleBot.goCommand(chat_id(), sender());
-    case "START": return ShuffleBot.startCommand(chat_id(), text());
+    case "RUN": return ShuffleBot.runCommand(chat_id(), text());
+    case "CURRENT": return ShuffleBot.currentCommand(chat_id());
+    case "START": return ShuffleBot.startCommand(chat_id(), sender());
     default: return Future.value(null);
   }
 }

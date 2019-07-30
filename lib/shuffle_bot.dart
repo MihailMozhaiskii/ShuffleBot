@@ -4,6 +4,22 @@ import 'package:ShuffleBot/game.dart';
 
 class ShuffleBot {
 
+  static Future<String> startCommand(String chat_id, String sender) async {
+    var text = "Hi, ${_formatName(sender)}\n\n"
+    + "*This bot can help you to shuffle players to teams during tournament*\n\n" 
+    + "`/create` - command which create new game. *Type* - required argument (*1x1* or *2x2*). It is type of your team by members count\n"
+    + "`/shuffle` - command which create new *random* teams each time\n"
+    + "`/add` - command which add new player\n"
+    + "`/remove` - command which remove player\n"
+    + "\n*Group chat features*\n\n"
+    + "You can tap `/go` command which notify other members about coming event. Each of members can send *+* message which notify bot what "
+    + "this member want join to coming event. After that user tap `/run` command with *type* argument and bot will create new game";
+
+    await FirebaseStorage.createGame(chat_id, null);
+    await FirebaseStorage.savePotentialPlayers(chat_id, []);
+
+    return Future.value(text);
+  }
   static Future<String> createCommand(String chat_id, String text) {
     var arguments = text.split(" ");
 
@@ -55,10 +71,10 @@ class ShuffleBot {
     return "Please send *+* message to join";
   }
 
-  static Future<String> startCommand(String chat_id, String text) async {
+  static Future<String> runCommand(String chat_id, String text) async {
     var arguments = text.split(" ");
 
-    if (arguments.length < 2) return Future.value("`Failed arguments`\n\nUse `/start type(*1x1* or *2x2*)`");
+    if (arguments.length < 2) return Future.value("Failed arguments\n\nUse `/start type(`*1x1*` or `*2x2*`)`");
 
     var strategy_data = arguments[1];
     var players = await FirebaseStorage.getPotentialPlayers(chat_id);
@@ -68,6 +84,11 @@ class ShuffleBot {
     var game = Game(strategy, players);
     return FirebaseStorage.createGame(chat_id, game)
     .then((_) => 'New game was created. *${game.players.length}* players\n\nUse `/add` and `/remove` commands to edit count of players.');
+  }
+
+  static Future<String> currentCommand(String chat_id) {
+    return FirebaseStorage.getGame(chat_id)
+    .then((game) => game != null ? _formatGame(game) : "Can not find any game. Create one\n\nUse `/create` command");
   }
 
   static Future<String> plusKeyword(String chat_id, String sender) async {
@@ -87,6 +108,17 @@ class ShuffleBot {
         break;
     }
     return strategy;
+  }
+
+  static String _formatStrategy(int strategy) {
+    switch (strategy) {
+      case 1 : return "1x1";
+        break;
+      case 2 : return "2x2";
+        break;
+    }
+
+    return null;
   }
 
   static Game _parseGame(List<String> arguments) {
@@ -122,8 +154,21 @@ class ShuffleBot {
     return name[0] == '@' ? name.substring(1) : name;
   }
 
+  static String _formatGame(Game game) {
+    var players = game.players.isNotEmpty ? _formatPlayers(game.players, ", ") : "empty";
+    var players_text = "Players: $players";
+
+    var strategy_text = "Strategy: *${_formatStrategy(game.strategy)}*";
+    
+    if (players_text.isEmpty && strategy_text.isEmpty) return null;
+
+    if (strategy_text.isEmpty) return players_text;
+
+    return "$players_text\n\n$strategy_text"; 
+  }
+
   static String _formatShuffle(ShuffleResult result) {
-    if (result == null || result.opponents.isEmpty) return null;
+    if (result == null || result.opponents.isEmpty) return "Can not create opponent pairs. Please add more players\n\nUse `/add` command to add player";
 
     var opponents = result
       .opponents
@@ -134,7 +179,7 @@ class ShuffleBot {
 
     if (result.losers.isEmpty) return opponents_text;
 
-    var losers_text = "Wasted: " + _formatPlayers(result.losers, ",") + " :(";
+    var losers_text = "Wasted: ${_formatPlayers(result.losers, ", ")} :(";
 
     return opponents_text + "\n\n" + losers_text;
   }

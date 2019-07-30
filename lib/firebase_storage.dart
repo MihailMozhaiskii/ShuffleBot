@@ -6,8 +6,13 @@ import 'package:http/http.dart' as http;
 class FirebaseStorage {
 
   static Future createGame(String chat_id, Game game) async {
-    var properties = GameProperties(strategy: game.strategy, players: game.players);
-    var data = json.encode(properties.toJson());
+    var properties;
+    if (game != null) {
+      properties = GameProperties(strategy: game.strategy, players: game.players);
+    } else {
+      properties = GameProperties(strategy: null, players: []);
+    }
+    var data = json.encode(properties);
 
     var url = 'https://chu-wa-chi.firebaseio.com/games/$chat_id/game.json';
     await http.put(url, body: data);
