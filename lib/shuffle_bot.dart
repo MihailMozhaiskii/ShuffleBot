@@ -7,7 +7,7 @@ class ShuffleBot {
   static Future<String> createCommand(String chat_id, String text) {
     var arguments = text.split(" ");
 
-    if (arguments.length < 3) return Future.value("`Failed arguments`\n\nUse `/create type(*1x1* or *2x2*) players...`");
+    if (arguments.length < 3) return Future.value("Failed arguments\n\nUse `/create type(*1x1* or *2x2*) players...`");
 
     var game = _parseGame(arguments.sublist(1));
     return FirebaseStorage.createGame(chat_id, game)
@@ -22,7 +22,7 @@ class ShuffleBot {
   static Future<String> addCommand(String chat_id, String text) {
     var arguments = text.split(" ");
 
-    if (arguments.length < 2) return Future.value("`Illegal arguments`\n\nUse `/add player`");
+    if (arguments.length < 2) return Future.value("Illegal arguments\n\nUse `/add player`");
 
     var player_name = _removePrefixIfNeeded(arguments[1]);
     var player = Player(name: player_name);
@@ -34,7 +34,7 @@ class ShuffleBot {
   static Future<String> removeCommand(String chat_id, String text) {
     var arguments = text.split(" ");
 
-    if (arguments.length < 2) return Future.value("`Illegal arguments`\n\nUse `/remove player`");
+    if (arguments.length < 2) return Future.value("Illegal arguments\n\nUse `/remove player`");
 
     var player_name = arguments[1];
     var player = Player(name: player_name);
@@ -130,11 +130,11 @@ class ShuffleBot {
       .map((opponent) => _formatOpponents(opponent))
       .join("\n");
 
-    var opponents_text = "`Opponents`\n" + opponents;
+    var opponents_text = "Opponents\n" + opponents;
 
     if (result.losers.isEmpty) return opponents_text;
 
-    var losers_text = "`Wasted:` " + _formatPlayers(result.losers, ",") + " :(";
+    var losers_text = "Wasted: " + _formatPlayers(result.losers, ",") + " :(";
 
     return opponents_text + "\n\n" + losers_text;
   }
