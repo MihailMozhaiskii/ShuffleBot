@@ -9,21 +9,50 @@ class FirebaseStorage {
     var properties = GameProperties(strategy: game.strategy, players: game.players);
     var data = json.encode(properties.toJson());
 
-    var url = 'https://chu-wa-chi.firebaseio.com/games/$chat_id.json';
-    var responce = await http.put(url, body: data);
-
-    print("CHAT::$chat_id : new game : ${responce.statusCode} ${responce.body}");
+    var url = 'https://chu-wa-chi.firebaseio.com/games/$chat_id/game.json';
+    await http.put(url, body: data);
   }
 
   static Future<Game> getGame(String chat_id) async {
-    var url = 'https://chu-wa-chi.firebaseio.com/games/$chat_id.json';
+    var url = 'https://chu-wa-chi.firebaseio.com/games/$chat_id/game.json';
     var responce = await http.get(url);
 
     var body = responce.body;
     var result = json.decode(body);
 
+    if (result == null) return null;
+
     var game_properties = GameProperties.fromJson(result);
     return Game(game_properties.strategy, game_properties.players);
+  }
+
+  static Future addPotentialPlayer(String chat_id, Player player) async {
+    List<Player> players = [];
+    var saved_players = await getPotentialPlayers(chat_id);
+    if (saved_players != null) {
+      players.addAll(saved_players);
+    } else {
+      return;
+    }
+    players.add(player);
+
+    await savePotentialPlayers(chat_id, players);
+  }
+
+  static Future savePotentialPlayers(String chat_id, List<Player> players) async {
+    var data = json.encode({ 'players': players });
+
+    var url = 'https://chu-wa-chi.firebaseio.com/games/$chat_id/potential.json';
+    await http.put(url, body: data);
+  }
+
+  static Future<List<Player>> getPotentialPlayers(String chat_id) async {
+    var url = 'https://chu-wa-chi.firebaseio.com/games/$chat_id/potential.json';
+    var responce = await http.get(url);
+
+    var body = responce.body;
+    var result = json.decode(body);
+    return (result['players'] as List).map((item) => item['name']).map((name) => Player(name: name)).toList();
   }
 
   static Future addPlayer(String chat_id, Player player) async {
