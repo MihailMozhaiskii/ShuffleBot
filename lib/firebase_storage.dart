@@ -34,6 +34,12 @@ class FirebaseStorage {
     } else {
       return;
     }
+
+    var contains_player = players.firstWhere((p) => player.name == p.name, orElse: () => null);
+    if (contains_player != null) {
+      return;
+    }
+
     players.add(player);
 
     await savePotentialPlayers(chat_id, players);
@@ -55,13 +61,20 @@ class FirebaseStorage {
     return (result['players'] as List).map((item) => item['name']).map((name) => Player(name: name)).toList();
   }
 
-  static Future addPlayer(String chat_id, Player player) async {
+  static Future<bool> addPlayer(String chat_id, Player player) async {
     var game = await getGame(chat_id);
-    if (game == null) return;
+    if (game == null) return false;
+
+    var contains_player = game.players.firstWhere((p) => player.name == p.name, orElse: () => null);
+    if (contains_player != null) {
+      return false;
+    }
 
     game.players.add(player);
 
     await createGame(chat_id, game);
+
+    return true;
   }
 
   static Future<bool> removePlayer(String chat_id, Player player) async {

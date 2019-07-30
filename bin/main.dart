@@ -54,7 +54,7 @@ Future<String> onMessage(String keyword, Message message) {
 
 void handleCommand(String command, Message message, TeleDart teledart) {
   onCommand(command, message)
-  .then((result) => result != null ? teledart.replyMessage(message, result) : null);
+  .then((result) => result != null ? teledart.replyMessage(message, result, parse_mode: 'markdown') : null);
 }
 
 Future<String> onCommand(String command, Message message) {
