@@ -46,7 +46,7 @@ void handleMessage(String keyword, Message message, TeleDart teledart) {
 
 Future<String> onMessage(String keyword, Message message) {
   var chat_id = () => message.chat.id.toString();
-  var sender = () => message.forward_sender_name;
+  var sender = () => message.from.username;
 
   switch(keyword) {
     case "PLUS": return ShuffleBot.plusKeyword(chat_id(), sender()); break;
