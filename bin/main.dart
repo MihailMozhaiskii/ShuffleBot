@@ -36,7 +36,7 @@ main(List<String> arguments) {
   teledart.onCommand('run').listen((message) => handleCommand('RUN', message, teledart));
   teledart.onCommand('current').listen((message) => handleCommand('CURRENT', message, teledart));
 
-  teledart.onMessage(keyword: '\\+').listen((message) => handleMessage('PLUS', message, teledart));
+  teledart.onMessage(keyword: '\\+', entityType: '*').listen((message) => handleMessage('PLUS', message, teledart));
 }
 
 void handleMessage(String keyword, Message message, TeleDart teledart) {

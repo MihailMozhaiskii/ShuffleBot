@@ -63,6 +63,9 @@ class FirebaseStorage {
 
     var body = responce.body;
     var result = json.decode(body);
+    
+    if (result == null) return null;
+
     return (result['players'] as List).map((item) => item['name']).map((name) => Player(name: name)).toList();
   }
 
