@@ -35,6 +35,7 @@ main(List<String> arguments) {
   teledart.onCommand('go').listen((message) => handleCommand('GO', message, teledart));
   teledart.onCommand('run').listen((message) => handleCommand('RUN', message, teledart));
   teledart.onCommand('current').listen((message) => handleCommand('CURRENT', message, teledart));
+  teledart.onCommand('info').listen((message) => handleCommand('INFO', message, teledart));
 
   teledart.onMessage(keyword: '\\+', entityType: '*').listen((message) => handleMessage('PLUS', message, teledart));
 }
@@ -73,6 +74,7 @@ Future<String> onCommand(String command, Message message) {
     case "RUN": return ShuffleBot.runCommand(chat_id(), text());
     case "CURRENT": return ShuffleBot.currentCommand(chat_id());
     case "START": return ShuffleBot.startCommand(chat_id(), sender());
+    case "INFO": return ShuffleBot.infoCommand();
     default: return Future.value(null);
   }
 }
