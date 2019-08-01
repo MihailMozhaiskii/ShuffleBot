@@ -38,9 +38,11 @@ class ShuffleBot {
 
     String strategy = arguments.length == 2 ? arguments[1] : null;
 
+    if (strategy != null && !Parser.validateStartegy(strategy)) return _text['shuffle.fail.argument']();
+
     var game = await FirebaseStorage.getGame(chat_id);
 
-    if (game == null) return _text['empty.game'];
+    if (game == null) return _text['empty.game']();
 
     if (strategy != null) {
       game = Game(strategy, game.players);
@@ -146,6 +148,10 @@ class ShuffleBot {
     var game = await FirebaseStorage.getGame(chat_id);
 
     return game != null ? Formatter.formatGame(game) : _text['no.games']();
+  }
+
+  static Future<String> infoCommand() {
+    return Future.value(_text['info']());
   }
 
   static Future<String> plusKeyword(String chat_id, String sender) async {
