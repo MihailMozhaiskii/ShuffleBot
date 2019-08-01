@@ -24,6 +24,9 @@ class ShuffleBot {
     if (arguments.length < 3) return Future.value(_text['create.fail.argument']());
 
     var game = Parser.parseGame(arguments.sublist(1));
+
+    if (game == null) return Future.value(_text['create.fail.argument']());
+
     return FirebaseStorage.createGame(chat_id, game)
     .then((_) => _text['new.game.created'](game.players.length));
   }
@@ -74,11 +77,10 @@ class ShuffleBot {
 
     if (arguments.length < 2) return Future.value(_text['illegal.argument.run']());
 
-    var strategy_data = arguments[1];
+    var strategy = arguments[1];
     var players = await FirebaseStorage.getPotentialPlayers(chat_id);
     await FirebaseStorage.savePotentialPlayers(chat_id, []);
 
-    var strategy = Parser.parseStrategy(strategy_data);
     var game = Game(strategy, players);
     return FirebaseStorage.createGame(chat_id, game)
     .then((_) => _text['new.game.created'](game.players.length));

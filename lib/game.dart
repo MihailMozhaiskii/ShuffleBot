@@ -39,7 +39,7 @@ class ShuffleResult {
 }
 
 class GameProperties {
-  int strategy;
+  String strategy;
   List<Player> players;
 
   GameProperties({
@@ -62,28 +62,31 @@ class GameProperties {
 
 class Game {
 
-  int strategy;
+  String strategy;
   List<Player> players;
 
-  Game(int strategy, List<Player> players) {
+  List<int> _players_division;
+
+  Game(String strategy, List<Player> players) {
     this.strategy = strategy;
     this.players = players;
+
+    this._players_division = strategy.split("x").map((number) => int.parse(number)).toList();
   }
 
   ShuffleResult shuffle() {
-    int team_members_count = strategy;
-
-    int opponents_count = 2;
+    int min_members_count = _players_division.reduce((acc, value) => acc + value);
+    int opponents_count = _players_division.length;
 
     players.shuffle();
     Queue<Player> players_queue = Queue.from(players);
 
     List<Opponents> all_opponents = [];
-    while(players_queue.length >= team_members_count * opponents_count) {
+    while(players_queue.length >= min_members_count) {
       List<Team> teams = [];
       for(var i = 0; i < opponents_count; i++) {
         List<Player> team_players = [];
-        for(var j = 0; j < team_members_count; j++) {
+        for(var j = 0; j < _players_division[i]; j++) {
           Player player = players_queue.removeLast();
           team_players.add(player);
         }
