@@ -66,7 +66,7 @@ Future<String> onCommand(String command, Message message) {
 
   switch (command) {
     case "CREATE": return ShuffleBot.createCommand(chat_id(), text());
-    case "SHUFFLE": return ShuffleBot.shuffleCommand(chat_id());
+    case "SHUFFLE": return ShuffleBot.shuffleCommand(chat_id(), text());
     case "ADD": return ShuffleBot.addCommand(chat_id(), text());
     case "REMOVE": return ShuffleBot.removeCommand(chat_id(), text());
     case "GO": return ShuffleBot.goCommand(chat_id(), sender());

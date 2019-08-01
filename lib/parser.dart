@@ -15,7 +15,7 @@ class Parser {
 
   static Game parseGame(List<String> arguments) {
     var strategy_data = arguments[0];
-    var players_data = arguments.sublist(1);
+    var players_data = arguments.sublist(1).toSet();
 
     if (!_validateStartegy(strategy_data)) {
       return null;
