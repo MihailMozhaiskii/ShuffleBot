@@ -3,27 +3,26 @@ import 'package:ShuffleBot/util.dart';
 
 class Parser {
 
-  static int parseStrategy(String strategy_data) {
-    var strategy;
-    switch (strategy_data) {
-      case "1x1":
-        strategy = 1;
-        break;
-      case "2x2":
-        strategy = 2;
-        break;
+  static bool _validateStartegy(String strategy) {
+    for (var number in strategy.split("x")) {
+      if (int.tryParse(number) == null) {
+        return false;
+      }
     }
-    return strategy;
+    
+    return true;
   }
 
   static Game parseGame(List<String> arguments) {
     var strategy_data = arguments[0];
     var players_data = arguments.sublist(1);
 
-    var strategy = parseStrategy(strategy_data);
+    if (!_validateStartegy(strategy_data)) {
+      return null;
+    }
 
     var players = players_data.map((name) => removePrefixIfNeeded(name)).map((name) => Player(name: name)).toList();
 
-    return Game(strategy, players);
+    return Game(strategy_data, players);
   }
 }

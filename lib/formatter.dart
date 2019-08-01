@@ -4,7 +4,7 @@ import 'package:ShuffleBot/util.dart';
 class Formatter {
 
   static String _formatOpponents(Opponents opponents) {
-    return _formatTeam(opponents.teams[0]) + " VS " + _formatTeam(opponents.teams[1]);
+    return opponents.teams.map((team) => _formatTeam(team)).join(" VS ");
   }
 
   static String _formatTeam(Team team) {
@@ -19,22 +19,11 @@ class Formatter {
     return "*${removePrefixIfNeeded(name)}*";
   }
 
-  static String _formatStrategy(int strategy) {
-    switch (strategy) {
-      case 1 : return "1x1";
-        break;
-      case 2 : return "2x2";
-        break;
-    }
-
-    return null;
-  }
-
   static String formatGame(Game game) {
     var players = game.players.isNotEmpty ? _formatPlayers(game.players, ", ") : "empty";
     var players_text = "Players: $players";
 
-    var strategy_text = "Strategy: *${_formatStrategy(game.strategy)}*";
+    var strategy_text = "Strategy: *${game.strategy}*";
     
     if (players_text.isEmpty && strategy_text.isEmpty) return null;
 
