@@ -59,9 +59,9 @@ class FirebaseStorage {
 
   static Future<List<Player>> getPotentialPlayers(String chat_id) async {
     var url = 'https://chu-wa-chi.firebaseio.com/games/$chat_id/potential.json';
-    var responce = await http.get(url);
+    var response = await http.get(url);
 
-    var body = responce.body;
+    var body = response.body;
     var result = json.decode(body);
     
     if (result == null) return null;
