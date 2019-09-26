@@ -3,7 +3,7 @@ import 'package:ShuffleBot/util.dart';
 
 class Parser {
 
-  static bool validateStartegy(String strategy) {
+  static bool validateStrategy(String strategy) {
     for (var number in strategy.split("x")) {
       if (int.tryParse(number) == null) {
         return false;
@@ -17,7 +17,7 @@ class Parser {
     var strategy_data = arguments[0];
     var players_data = arguments.sublist(1).toSet();
 
-    if (!validateStartegy(strategy_data)) {
+    if (!validateStrategy(strategy_data)) {
       return null;
     }
 

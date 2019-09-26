@@ -18,6 +18,7 @@ class ShuffleBot {
 
     return text;
   }
+
   static Future<String> createCommand(String chat_id, String text) async {
     var arguments = text.split(" ");
 
@@ -34,34 +35,52 @@ class ShuffleBot {
 
   static Future<String> shuffleCommand(String chat_id, String text) async {
     var arguments = text.split(" ");
-    if (arguments.length > 2) return _text['shuffle.fail.argument'];
+    final players = await FirebaseStorage.getPotentialPlayers(chat_id);
+    final hasPotentialPlayers = players.isNotEmpty;
 
     String strategy = arguments.length == 2 ? arguments[1] : null;
 
-    if (strategy != null && !Parser.validateStartegy(strategy)) return _text['shuffle.fail.argument']();
+    if (hasPotentialPlayers) {
+      if (players.length > 4) return _text['shuffle.fail.argument'];
 
-    var game = await FirebaseStorage.getGame(chat_id);
+      if (strategy == null) {
+        strategy = (await FirebaseStorage.getDefaultStrategy(chat_id)) ?? '2x2';
+      }
 
-    if (game == null) return _text['empty.game']();
+      await FirebaseStorage.savePotentialPlayers(chat_id, []);
 
-    if (strategy != null) {
-      game = Game(strategy, game.players);
+      var game = Game(strategy, players);
       await FirebaseStorage.createGame(chat_id, game);
-    }
 
-    return Formatter.formatShuffle(game.shuffle());
+      return Formatter.formatShuffle(game.shuffle());
+    } else {
+      if (strategy != null && !Parser.validateStrategy(strategy))
+        return _text['shuffle.fail.argument']();
+
+      var game = await FirebaseStorage.getGame(chat_id);
+
+      if (game == null) return _text['empty.game']();
+
+      if (strategy != null) {
+        game = Game(strategy, game.players);
+        await FirebaseStorage.createGame(chat_id, game);
+      }
+
+      return Formatter.formatShuffle(game.shuffle());
+    }
   }
 
   static Future<String> addCommand(String chat_id, String text) async {
     var arguments = text.split(" ");
 
-    if (arguments.length < 2) return Future.value( _text['illegal.arguments.add']());
+    if (arguments.length < 2)
+      return Future.value(_text['illegal.arguments.add']());
 
     var players = arguments.sublist(1)
-    .toSet()
-    .map((name) => removePrefixIfNeeded(name))
-    .map((name) => Player(name: name))
-    .toList();
+        .toSet()
+        .map((name) => removePrefixIfNeeded(name))
+        .map((name) => Player(name: name))
+        .toList();
 
     Map<Player, bool> result = {};
     for (var player in players) {
@@ -69,16 +88,22 @@ class ShuffleBot {
     }
 
     var added_players = players.where((player) => result[player]).toList();
-    var already_exist_players = players.where((player) => !result[player]).toList();
+    var already_exist_players = players.where((player) => !result[player])
+        .toList();
 
     var added_text = () {
-      var added_text_res = added_players.length > 1 ? _text['were.added'] : _text['was.added'];
+      var added_text_res = added_players.length > 1
+          ? _text['were.added']
+          : _text['was.added'];
       return added_text_res(Formatter.formatPlayers(added_players, ', '));
     };
-    
+
     var already_exist_text = () {
-      var already_exist_res = already_exist_players.length > 1 ? _text['already.exists'] : _text['already.exist'];
-      return already_exist_res(Formatter.formatPlayers(already_exist_players, ', '));
+      var already_exist_res = already_exist_players.length > 1
+          ? _text['already.exists']
+          : _text['already.exist'];
+      return already_exist_res(
+          Formatter.formatPlayers(already_exist_players, ', '));
     };
 
     if (added_players.isEmpty) return already_exist_text();
@@ -93,10 +118,10 @@ class ShuffleBot {
     if (arguments.length < 2) return Future.value(_text['illegal.arguments.remove']());
 
     var players = arguments.sublist(1)
-    .toSet()
-    .map((name) => removePrefixIfNeeded(name))
-    .map((name) => Player(name: name))
-    .toList();
+        .toSet()
+        .map((name) => removePrefixIfNeeded(name))
+        .map((name) => Player(name: name))
+        .toList();
 
     Map<Player, bool> result = {};
     for (var player in players) {
@@ -107,10 +132,12 @@ class ShuffleBot {
     var not_found_players = players.where((player) => !result[player]).toList();
 
     var removed_text = () {
-      var added_text_res = removed_players.length > 1 ? _text['were.removed'] : _text['was.removed'];
+      var added_text_res = removed_players.length > 1
+          ? _text['were.removed']
+          : _text['was.removed'];
       return added_text_res(Formatter.formatPlayers(removed_players, ', '));
     };
-    
+
     var not_found_text = () {
       var not_found_res = _text['not.found'];
       return not_found_res(Formatter.formatPlayers(not_found_players, ', '));
@@ -129,21 +156,6 @@ class ShuffleBot {
     return _text['plus.message.description']();
   }
 
-  static Future<String> runCommand(String chat_id, String text) async {
-    var arguments = text.split(" ");
-
-    if (arguments.length < 2) return Future.value(_text['illegal.argument.run']());
-
-    var strategy = arguments[1];
-    var players = await FirebaseStorage.getPotentialPlayers(chat_id);
-    await FirebaseStorage.savePotentialPlayers(chat_id, []);
-
-    var game = Game(strategy, players);
-    await FirebaseStorage.createGame(chat_id, game);
-
-    return  _text['new.game.created'](game.players.length);
-  }
-
   static Future<String> currentCommand(String chat_id) async {
     var game = await FirebaseStorage.getGame(chat_id);
 
@@ -152,6 +164,26 @@ class ShuffleBot {
 
   static Future<String> infoCommand() {
     return Future.value(_text['info']());
+  }
+
+  static Future<String> strategyCommand(String chat_id, String text) async {
+    final arguments = text.split(' ');
+
+    if (arguments.length == 1) {
+      final strategy = await FirebaseStorage.getDefaultStrategy(chat_id);
+      return strategy == null ? 'Default strategy: 2x2' : 'Default strategy not found. Please set one';
+    } else if (arguments.length == 2) {
+      final strategy = arguments[1];
+
+      if (strategy != null && !Parser.validateStrategy(strategy)) return _text['shuffle.fail.argument']();
+
+      await FirebaseStorage.saveDefaultStrategy(strategy, chat_id);
+
+      return 'Saved';
+    } else if (arguments.length > 2) {
+      return _text['shuffle.fail.argument']();
+    }
+    return null;
   }
 
   static Future<String> plusKeyword(String chat_id, String sender) async {

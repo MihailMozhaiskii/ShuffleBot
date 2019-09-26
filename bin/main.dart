@@ -36,6 +36,7 @@ main(List<String> arguments) {
   teledart.onCommand('run').listen((message) => handleCommand('RUN', message, teledart));
   teledart.onCommand('current').listen((message) => handleCommand('CURRENT', message, teledart));
   teledart.onCommand('info').listen((message) => handleCommand('INFO', message, teledart));
+  teledart.onCommand('strategy').listen((message) => handleCommand('STRATEGY', message, teledart));
 
   teledart.onMessage(keyword: '\\+', entityType: '*').listen((message) => handleMessage('PLUS', message, teledart));
 }
@@ -47,7 +48,7 @@ void handleMessage(String keyword, Message message, TeleDart teledart) {
 
 Future<String> onMessage(String keyword, Message message) {
   var chat_id = () => message.chat.id.toString();
-  var sender = () => message.from.username;
+  var sender = () => message.from.username ?? message.from.first_name;
 
   switch(keyword) {
     case "PLUS": return ShuffleBot.plusKeyword(chat_id(), sender()); break;
@@ -63,7 +64,7 @@ void handleCommand(String command, Message message, TeleDart teledart) {
 Future<String> onCommand(String command, Message message) {
   var chat_id = () => message.chat.id.toString();
   var text = () => message.text;
-  var sender = () => message.from.first_name;
+  var sender = () => message.from.username ?? message.from.first_name;
 
   switch (command) {
     case "CREATE": return ShuffleBot.createCommand(chat_id(), text());
@@ -71,10 +72,10 @@ Future<String> onCommand(String command, Message message) {
     case "ADD": return ShuffleBot.addCommand(chat_id(), text());
     case "REMOVE": return ShuffleBot.removeCommand(chat_id(), text());
     case "GO": return ShuffleBot.goCommand(chat_id(), sender());
-    case "RUN": return ShuffleBot.runCommand(chat_id(), text());
     case "CURRENT": return ShuffleBot.currentCommand(chat_id());
     case "START": return ShuffleBot.startCommand(chat_id(), sender());
     case "INFO": return ShuffleBot.infoCommand();
+    case "STRATEGY": return ShuffleBot.strategyCommand(chat_id(), text());
     default: return Future.value(null);
   }
 }
