@@ -19,7 +19,7 @@ final Map<String, dynamic> ENG = {
     + "`/info` - info about available commands.\n"
     + "\n*Group chat features*\n\n"
     + "You can tap `/go` command which notify other members about coming event. Each of members can send *+* message which mean  member want to " 
-    + "join coming event. After entering `/run` command with *type* argument bot will create new game.",
+    + "join coming event. After entering `/shuffle` command with *type* argument bot will create new game.",
   'create.fail.argument': () => "Failed arguments.\n\nUse `/create *type*(example 1x1, 2x2, 3x3x3) players...`.",
   'shuffle.fail.argument': () => "Failed arguments.\n\nUse `/shuffle` or `/shuffle` *type*",
   'new.game.created': (player_length) => "New game was created. *${player_length}* players\n\nUse `/add` and `/remove` commands to edit count of players.",

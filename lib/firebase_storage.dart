@@ -69,6 +69,25 @@ class FirebaseStorage {
     return (result['players'] as List).map((item) => item['name']).map((name) => Player(name: name)).toList();
   }
 
+  static Future saveDefaultStrategy(String strategy, String chat_id) async {
+    var data = json.encode({ 'strategy': strategy });
+
+    var url = 'https://chu-wa-chi.firebaseio.com/games/$chat_id/default_strategy.json';
+    await http.put(url, body: data);
+  }
+
+  static Future<String> getDefaultStrategy(String chat_id) async {
+    var url = 'https://chu-wa-chi.firebaseio.com/games/$chat_id/default_strategy.json';
+    var response = await http.get(url);
+
+    var body = response.body;
+    var result = json.decode(body);
+
+    if (result == null) return null;
+
+    return result['strategy'];
+  }
+
   static Future<bool> addPlayer(String chat_id, Player player) async {
     var game = await getGame(chat_id);
     if (game == null) return false;
