@@ -11,7 +11,7 @@ class ShuffleBot {
   static var _text = ENG;
 
   static Future<String> startCommand(String chat_id, String sender) async {
-    var text = _text['greeting'](Formatter.formatName(sender));
+    final text = _text['greeting'](Formatter.formatName(sender));
 
     await FirebaseStorage.createGame(chat_id, null);
     await FirebaseStorage.savePotentialPlayers(chat_id, []);
@@ -20,11 +20,11 @@ class ShuffleBot {
   }
 
   static Future<String> createCommand(String chat_id, String text) async {
-    var arguments = text.split(" ");
+    final arguments = text.split(" ");
 
     if (arguments.length < 3) return _text['create.fail.argument']();
 
-    var game = Parser.parseGame(arguments.sublist(1));
+    final game = Parser.parseGame(arguments.sublist(1));
 
     if (game == null) return _text['create.fail.argument']();
 
@@ -34,7 +34,7 @@ class ShuffleBot {
   }
 
   static Future<String> shuffleCommand(String chat_id, String text) async {
-    var arguments = text.split(" ");
+    final arguments = text.split(" ");
     final players = await FirebaseStorage.getPotentialPlayers(chat_id);
     final hasPotentialPlayers = players.isNotEmpty;
 
@@ -54,8 +54,7 @@ class ShuffleBot {
 
       return Formatter.formatShuffle(game.shuffle());
     } else {
-      if (strategy != null && !Parser.validateStrategy(strategy))
-        return _text['shuffle.fail.argument']();
+      if (strategy != null && !Parser.validateStrategy(strategy)) return _text['shuffle.fail.argument']();
 
       var game = await FirebaseStorage.getGame(chat_id);
 
@@ -71,45 +70,43 @@ class ShuffleBot {
   }
 
   static Future<String> addCommand(String chat_id, String text) async {
-    var arguments = text.split(" ");
+    final arguments = text.split(" ");
 
-    if (arguments.length < 2)
-      return Future.value(_text['illegal.arguments.add']());
+    if (arguments.length < 2) return Future.value(_text['illegal.arguments.add']());
 
-    var players = arguments.sublist(1)
+    final players = arguments.sublist(1)
         .toSet()
         .map((name) => removePrefixIfNeeded(name))
         .map((name) => Player(name: name))
         .toList();
 
-    Map<Player, bool> result = {};
+    final result = <Player, bool>{};
     for (var player in players) {
       result[player] = await FirebaseStorage.addPlayer(chat_id, player);
     }
 
-    var added_players = players.where((player) => result[player]).toList();
-    var already_exist_players = players.where((player) => !result[player])
+    final addedPlayers = players.where((player) => result[player]).toList();
+    final alreadyExistPlayers = players.where((player) => !result[player])
         .toList();
 
-    var added_text = () {
-      var added_text_res = added_players.length > 1
+    final addedText = () {
+      final addedTextRes = addedPlayers.length > 1
           ? _text['were.added']
           : _text['was.added'];
-      return added_text_res(Formatter.formatPlayers(added_players, ', '));
+      return addedTextRes(Formatter.formatPlayers(addedPlayers, ', '));
     };
 
-    var already_exist_text = () {
-      var already_exist_res = already_exist_players.length > 1
+    final alreadyExistText = () {
+      final alreadyExistRes = alreadyExistPlayers.length > 1
           ? _text['already.exists']
           : _text['already.exist'];
-      return already_exist_res(
-          Formatter.formatPlayers(already_exist_players, ', '));
+      return alreadyExistRes(Formatter.formatPlayers(alreadyExistPlayers, ', '));
     };
 
-    if (added_players.isEmpty) return already_exist_text();
-    if (already_exist_players.isEmpty) return added_text();
+    if (addedPlayers.isEmpty) return alreadyExistText();
+    if (alreadyExistPlayers.isEmpty) return addedText();
 
-    return "${added_text()}\n\n${already_exist_text()}";
+    return "${addedText()}\n\n${alreadyExistText()}";
   }
 
   static Future<String> removeCommand(String chat_id, String text) async {
@@ -123,41 +120,41 @@ class ShuffleBot {
         .map((name) => Player(name: name))
         .toList();
 
-    Map<Player, bool> result = {};
+    final result = <Player, bool>{};
     for (var player in players) {
       result[player] = await FirebaseStorage.removePlayer(chat_id, player);
     }
 
-    var removed_players = players.where((player) => result[player]).toList();
-    var not_found_players = players.where((player) => !result[player]).toList();
+    final removedPlayers = players.where((player) => result[player]).toList();
+    final notFoundPlayers = players.where((player) => !result[player]).toList();
 
-    var removed_text = () {
-      var added_text_res = removed_players.length > 1
+    final removedText = () {
+      final addedTextTes = removedPlayers.length > 1
           ? _text['were.removed']
           : _text['was.removed'];
-      return added_text_res(Formatter.formatPlayers(removed_players, ', '));
+      return addedTextTes(Formatter.formatPlayers(removedPlayers, ', '));
     };
 
-    var not_found_text = () {
-      var not_found_res = _text['not.found'];
-      return not_found_res(Formatter.formatPlayers(not_found_players, ', '));
+    final notFoundText = () {
+      final notFoundRes = _text['not.found'];
+      return notFoundRes(Formatter.formatPlayers(notFoundPlayers, ', '));
     };
 
-    if (removed_players.isEmpty) return not_found_text();
-    if (not_found_players.isEmpty) return removed_text();
+    if (removedPlayers.isEmpty) return notFoundText();
+    if (notFoundPlayers.isEmpty) return removedText();
 
-    return "${removed_text()}\n\n${not_found_text()}";
+    return "${removedText()}\n\n${notFoundText()}";
   }
 
   static Future<String> goCommand(String chat_id, String sender) async {
-    var player = Player(name: sender);
+    final player = Player(name: sender);
     await FirebaseStorage.savePotentialPlayers(chat_id, [player]);
 
     return _text['plus.message.description']();
   }
 
   static Future<String> currentCommand(String chat_id) async {
-    var game = await FirebaseStorage.getGame(chat_id);
+    final game = await FirebaseStorage.getGame(chat_id);
 
     return game != null ? Formatter.formatGame(game) : _text['no.games']();
   }
@@ -187,7 +184,7 @@ class ShuffleBot {
   }
 
   static Future<String> plusKeyword(String chat_id, String sender) async {
-    var player = Player(name: sender);
+    final player = Player(name: sender);
     await FirebaseStorage.addPotentialPlayer(chat_id, player);
 
     return null;

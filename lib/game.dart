@@ -75,19 +75,19 @@ class Game {
   }
 
   ShuffleResult shuffle() {
-    int min_members_count = _players_division.reduce((acc, value) => acc + value);
-    int opponents_count = _players_division.length;
+    final minMembersCount = _players_division.reduce((acc, value) => acc + value);
+    final opponentsCount = _players_division.length;
 
     players.shuffle();
-    Queue<Player> players_queue = Queue.from(players);
+    Queue<Player> playersQueue = Queue.from(players);
 
-    List<Opponents> all_opponents = [];
-    while(players_queue.length >= min_members_count) {
+    List<Opponents> allOpponents = [];
+    while(playersQueue.length >= minMembersCount) {
       List<Team> teams = [];
-      for(var i = 0; i < opponents_count; i++) {
+      for(var i = 0; i < opponentsCount; i++) {
         List<Player> team_players = [];
         for(var j = 0; j < _players_division[i]; j++) {
-          Player player = players_queue.removeLast();
+          Player player = playersQueue.removeLast();
           team_players.add(player);
         }
 
@@ -96,9 +96,9 @@ class Game {
       }
 
       Opponents opponents = Opponents(teams);
-      all_opponents.add(opponents);
+      allOpponents.add(opponents);
     }
 
-    return ShuffleResult(all_opponents, players_queue.toList());
+    return ShuffleResult(allOpponents, playersQueue.toList());
   }
 }

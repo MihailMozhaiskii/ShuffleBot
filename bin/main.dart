@@ -62,9 +62,9 @@ void handleCommand(String command, Message message, TeleDart teledart) {
 }
 
 Future<String> onCommand(String command, Message message) {
-  var chat_id = () => message.chat.id.toString();
-  var text = () => message.text;
-  var sender = () => message.from.username ?? message.from.first_name;
+  final chat_id = () => message.chat.id.toString();
+  final text = () => message.text;
+  final sender = () => message.from.username ?? message.from.first_name;
 
   switch (command) {
     case "CREATE": return ShuffleBot.createCommand(chat_id(), text());

@@ -14,15 +14,15 @@ class Parser {
   }
 
   static Game parseGame(List<String> arguments) {
-    var strategy_data = arguments[0];
-    var players_data = arguments.sublist(1).toSet();
+    var strategyData = arguments[0];
+    var playersData = arguments.sublist(1).toSet();
 
-    if (!validateStrategy(strategy_data)) {
+    if (!validateStrategy(strategyData)) {
       return null;
     }
 
-    var players = players_data.map((name) => removePrefixIfNeeded(name)).map((name) => Player(name: name)).toList();
+    var players = playersData.map((name) => removePrefixIfNeeded(name)).map((name) => Player(name: name)).toList();
 
-    return Game(strategy_data, players);
+    return Game(strategyData, players);
   }
 }

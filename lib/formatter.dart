@@ -20,32 +20,32 @@ class Formatter {
   }
 
   static String formatGame(Game game) {
-    var players = game.players.isNotEmpty ? formatPlayers(game.players, ", ") : "empty";
-    var players_text = "Players: $players";
+    final players = game.players.isNotEmpty ? formatPlayers(game.players, ", ") : "empty";
+    final playersText = "Players: $players";
 
-    var strategy_text = "Strategy: *${game.strategy}*";
+    final strategyText = "Strategy: *${game.strategy}*";
     
-    if (players_text.isEmpty && strategy_text.isEmpty) return null;
+    if (playersText.isEmpty && strategyText.isEmpty) return null;
 
-    if (strategy_text.isEmpty) return players_text;
+    if (strategyText.isEmpty) return playersText;
 
-    return "$players_text\n\n$strategy_text"; 
+    return "$playersText\n\n$strategyText";
   }
 
   static String formatShuffle(ShuffleResult result) {
     if (result == null || result.opponents.isEmpty) return "Can not create opponent pairs. Please add more players\n\nUse `/add` command to add player";
 
-    var opponents = result
+    final opponents = result
       .opponents
       .map((opponent) => _formatOpponents(opponent))
       .join("\n");
 
-    var opponents_text = "Opponents\n" + opponents;
+    final opponentsText = "Opponents\n" + opponents;
 
-    if (result.losers.isEmpty) return opponents_text;
+    if (result.losers.isEmpty) return opponentsText;
 
-    var losers_text = "Wasted: ${formatPlayers(result.losers, ", ")} :(";
+    final losersText = "Wasted: ${formatPlayers(result.losers, ", ")} :(";
 
-    return opponents_text + "\n\n" + losers_text;
+    return opponentsText + "\n\n" + losersText;
   }
 }
